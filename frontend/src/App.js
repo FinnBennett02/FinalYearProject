@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 function App() {
   const [input, setInput] = useState("");
@@ -44,7 +45,9 @@ function App() {
         {messages.map((msg, index) => (
           <div key={index} style={msg.role === "user" ? styles.userRow : styles.botRow}>
             <div style={msg.role === "user" ? styles.userBubble : styles.botBubble}>
-              <p style={styles.bubbleText}>{msg.text}</p>
+              <div style={styles.bubbleMarkdown}>
+                <ReactMarkdown>{msg.text}</ReactMarkdown>
+              </div>
               <span style={styles.timestamp}>
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </span>
@@ -126,6 +129,10 @@ const styles = {
   bubbleText: {
     margin: 0,
     fontSize: "15px",
+  },
+  bubbleMarkdown: {
+    fontSize: "15px",
+    lineHeight: "1.5",
   },
   timestamp: {
     fontSize: "11px",
