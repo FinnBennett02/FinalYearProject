@@ -24,7 +24,7 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ input: input }),
+        body: JSON.stringify({ input: input, history: messages }),
       });
 
       const data = await res.json();
