@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 function ChatPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const { isDark } = useTheme();
+  const { token } = useAuth();
 
   const bottomRef = useRef(null);
 
@@ -25,7 +27,7 @@ function ChatPage() {
     try {
       const res = await fetch("/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ input: input, history: messages }),
       });
 

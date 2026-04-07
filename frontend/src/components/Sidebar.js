@@ -1,8 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 function Sidebar() {
   const { isDark, toggleTheme, newChat } = useTheme();
+  const { username, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <div style={styles.sidebar}>
@@ -29,8 +37,12 @@ function Sidebar() {
       </nav>
 
       <div style={styles.bottom}>
+        <p style={styles.username}>{username}</p>
         <button style={styles.themeToggle} onClick={toggleTheme}>
           {isDark ? "☀ Light Mode" : "☾ Dark Mode"}
+        </button>
+        <button style={styles.logoutButton} onClick={handleLogout}>
+          Log Out
         </button>
       </div>
     </div>
@@ -87,12 +99,30 @@ const styles = {
     borderTop: "1px solid #1f2937",
     paddingTop: "16px",
   },
+  username: {
+    fontSize: "13px",
+    color: "#9ca3af",
+    marginBottom: "10px",
+    paddingLeft: "4px",
+  },
   themeToggle: {
     width: "100%",
     padding: "10px",
     background: "transparent",
     color: "#9ca3af",
     border: "1px solid #1f2937",
+    borderRadius: "8px",
+    fontSize: "13px",
+    cursor: "pointer",
+    textAlign: "left",
+    marginBottom: "8px",
+  },
+  logoutButton: {
+    width: "100%",
+    padding: "10px",
+    background: "transparent",
+    color: "#ff4d4d",
+    border: "1px solid #ff4d4d33",
     borderRadius: "8px",
     fontSize: "13px",
     cursor: "pointer",

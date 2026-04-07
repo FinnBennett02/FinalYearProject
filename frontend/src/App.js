@@ -1,19 +1,30 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
 import ChatPage from "./pages/ChatPage";
 import HistoryPage from "./pages/HistoryPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+
+function ProtectedRoute({ children }) {
+  const { token } = useAuth();
+  return token ? children : <Navigate to="/login" />;
+}
 
 function AppLayout() {
   const { isDark, chatKey } = useTheme();
+  const { token } = useAuth();
 
   return (
     <div style={{ ...styles.layout, background: isDark ? "#1a1a2e" : "#f0f2f5" }}>
-      <Sidebar />
+      {token && <Sidebar />}
       <div style={styles.main}>
         <Routes>
-          <Route path="/" element={<ChatPage key={chatKey} />} />
-          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={<ProtectedRoute><ChatPage key={chatKey} /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
         </Routes>
       </div>
     </div>
@@ -22,11 +33,13 @@ function AppLayout() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter>
-        <AppLayout />
-      </BrowserRouter>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <AppLayout />
+        </BrowserRouter>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
