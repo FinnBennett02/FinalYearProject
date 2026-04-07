@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 function HistoryPage() {
   const [history, setHistory] = useState([]);
   const [expanded, setExpanded] = useState(null);
   const { isDark } = useTheme();
+  const { token } = useAuth();
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("workoutHistory") || "[]");
-    setHistory(saved);
-  }, []);
+    fetch("/history", {
+      headers: { "Authorization": `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => setHistory(data))
+      .catch(err => console.error("Failed to load history:", err));
+  }, [token]);
 
   const handleClear = () => {
-    localStorage.removeItem("workoutHistory");
     setHistory([]);
   };
 

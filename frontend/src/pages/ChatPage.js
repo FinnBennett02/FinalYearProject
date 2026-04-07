@@ -35,11 +35,7 @@ function ChatPage() {
       const botMessage = { role: "bot", text: data.workout, timestamp: new Date() };
       setMessages(prev => [...prev, botMessage]);
 
-      const saved = JSON.parse(localStorage.getItem("workoutHistory") || "[]");
-      saved.unshift({ prompt: input, response: data.workout, timestamp: new Date().toISOString() });
-      localStorage.setItem("workoutHistory", JSON.stringify(saved));
-
-    } catch (error) {
+} catch (error) {
       console.error("Failed to reach backend:", error);
     } finally {
       setLoading(false);
