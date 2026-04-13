@@ -14,6 +14,7 @@ function ProfilePage() {
   });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetch("/profile", {
@@ -31,7 +32,24 @@ function ProfilePage() {
       });
   }, [token]);
 
+  const validate = () => {
+    const newErrors = {};
+    if (form.age && (isNaN(form.age) || form.age < 10 || form.age > 100)) {
+      newErrors.age = "Age must be between 10 and 100";
+    }
+    if (form.weight && (isNaN(form.weight) || form.weight < 20 || form.weight > 300)) {
+      newErrors.weight = "Weight must be between 20 and 300 kg";
+    }
+    return newErrors;
+  };
+
   const handleSave = () => {
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
     fetch("/profile", {
       method: "PUT",
       headers: {
@@ -71,22 +89,24 @@ function ProfilePage() {
           <label style={{ ...styles.label, color: labelColor }}>Age</label>
           <input
             type="number"
-            style={{ ...styles.input, background: inputBg, color: text, border: `1px solid ${borderColor}` }}
+            style={{ ...styles.input, background: inputBg, color: text, border: `1px solid ${errors.age ? "#ff4d4d" : borderColor}` }}
             value={form.age}
             onChange={(e) => setForm({ ...form, age: e.target.value })}
             placeholder="e.g. 25"
           />
+          {errors.age && <span style={styles.error}>{errors.age}</span>}
         </div>
 
         <div style={styles.field}>
           <label style={{ ...styles.label, color: labelColor }}>Weight (kg)</label>
           <input
             type="number"
-            style={{ ...styles.input, background: inputBg, color: text, border: `1px solid ${borderColor}` }}
+            style={{ ...styles.input, background: inputBg, color: text, border: `1px solid ${errors.weight ? "#ff4d4d" : borderColor}` }}
             value={form.weight}
             onChange={(e) => setForm({ ...form, weight: e.target.value })}
             placeholder="e.g. 75"
           />
+          {errors.weight && <span style={styles.error}>{errors.weight}</span>}
         </div>
 
         <div style={styles.field}>
@@ -174,6 +194,10 @@ const styles = {
   savedMsg: {
     fontSize: "13px",
     color: "#22c55e",
+  },
+  error: {
+    fontSize: "12px",
+    color: "#ff4d4d",
   },
   saveButton: {
     padding: "10px 24px",

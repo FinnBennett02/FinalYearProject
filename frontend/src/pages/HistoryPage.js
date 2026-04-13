@@ -18,10 +18,6 @@ function HistoryPage() {
       .catch(err => console.error("Failed to load history:", err));
   }, [token]);
 
-  const handleClear = () => {
-    setHistory([]);
-  };
-
   const handleDelete = (id) => {
     fetch(`/history/${id}`, {
       method: "DELETE",
@@ -41,11 +37,6 @@ function HistoryPage() {
     <div style={{ ...styles.container, background: bg, color: text }}>
       <div style={styles.header}>
         <h1 style={{ ...styles.title, color: text }}>Workout History</h1>
-        {history.length > 0 && (
-          <button style={styles.clearButton} onClick={handleClear}>
-            Clear All
-          </button>
-        )}
       </div>
 
       {history.length === 0 ? (
@@ -103,15 +94,6 @@ const styles = {
   title: {
     fontSize: "22px",
     margin: 0,
-  },
-  clearButton: {
-    padding: "8px 16px",
-    background: "#ff4d4d",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "14px",
   },
   card: {
     borderRadius: "10px",
