@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
 import ChatPage from "./pages/ChatPage";
 import HistoryPage from "./pages/HistoryPage";
+import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
@@ -25,6 +26,7 @@ function AppLayout() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<ProtectedRoute><ChatPage key={chatKey} /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </div>
     </div>

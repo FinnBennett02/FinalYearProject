@@ -34,6 +34,12 @@ function Sidebar() {
         >
           History
         </NavLink>
+        <NavLink
+          to="/profile"
+          style={({ isActive }) => ({ ...styles.link, ...(isActive ? styles.activeLink : {}) })}
+        >
+          Profile
+        </NavLink>
       </nav>
 
       <div style={styles.bottom}>

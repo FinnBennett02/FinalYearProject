@@ -22,6 +22,15 @@ function HistoryPage() {
     setHistory([]);
   };
 
+  const handleDelete = (id) => {
+    fetch(`/history/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(() => {
+      setHistory(prev => prev.filter(item => item.id !== id));
+    });
+  };
+
   const bg = isDark ? "#0f172a" : "#f0f2f5";
   const text = isDark ? "#f1f5f9" : "#111";
   const cardBg = isDark ? "#1e293b" : "#fff";
@@ -58,6 +67,12 @@ function HistoryPage() {
                 <span style={{ fontSize: "12px", color: isDark ? "#94a3b8" : "#555" }}>
                   {expanded === index ? "▲" : "▼"}
                 </span>
+                <button
+                  style={styles.deleteButton}
+                  onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                >
+                  Delete
+                </button>
               </div>
             </div>
             {expanded === index && (
@@ -125,6 +140,15 @@ const styles = {
     padding: "16px",
     fontSize: "15px",
     lineHeight: "1.6",
+  },
+  deleteButton: {
+    padding: "4px 10px",
+    background: "transparent",
+    color: "#ff4d4d",
+    border: "1px solid #ff4d4d55",
+    borderRadius: "6px",
+    fontSize: "12px",
+    cursor: "pointer",
   },
 };
 

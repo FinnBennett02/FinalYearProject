@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -41,7 +41,13 @@ def generate_workout(
 ):
     user_input = request.input
     ai = AIService()
-    messages = PromptBuilder.build_prompt(user_input, history=request.history)
+    profile = {
+        "age": current_user.age,
+        "weight": current_user.weight,
+        "fitness_level": current_user.fitness_level,
+        "injuries": current_user.injuries,
+    }
+    messages = PromptBuilder.build_prompt(user_input, history=request.history, profile=profile)
     workout_text = ai.ask(messages)
 
     db.add(WorkoutHistory(user_id=current_user.id, prompt=user_input, response=workout_text))
@@ -64,3 +70,49 @@ def get_history(
         {"id": r.id, "prompt": r.prompt, "response": r.response, "timestamp": r.created_at}
         for r in records
     ]
+
+@app.delete("/history/{workout_id}")
+def delete_workout(
+    workout_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    record = db.query(WorkoutHistory).filter(
+        WorkoutHistory.id == workout_id,
+        WorkoutHistory.user_id == current_user.id
+    ).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Workout not found")
+    db.delete(record)
+    db.commit()
+    return {"message": "Deleted"}
+
+@app.get("/profile")
+def get_profile(current_user=Depends(get_current_user)):
+    return {
+        "username": current_user.username,
+        "email": current_user.email,
+        "age": current_user.age,
+        "weight": current_user.weight,
+        "fitness_level": current_user.fitness_level,
+        "injuries": current_user.injuries,
+    }
+
+class ProfileUpdateRequest(BaseModel):
+    age: int | None = None
+    weight: float | None = None
+    fitness_level: str | None = None
+    injuries: str | None = None
+
+@app.put("/profile")
+def update_profile(
+    request: ProfileUpdateRequest,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    current_user.age = request.age
+    current_user.weight = request.weight
+    current_user.fitness_level = request.fitness_level
+    current_user.injuries = request.injuries
+    db.commit()
+    return {"message": "Profile updated"}
