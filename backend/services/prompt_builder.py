@@ -22,7 +22,7 @@ class PromptBuilder:
         messages = [{"role": "system", "content": system_prompt}]
 
         if history:
-            for msg in history:
+            for msg in history [-10:]:  # Include only the last 10 messages for context
                 role = "assistant" if msg.role == "bot" else "user"
                 messages.append({"role": role, "content": msg.text})
 

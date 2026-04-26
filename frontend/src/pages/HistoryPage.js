@@ -15,15 +15,15 @@ function HistoryPage() {
     })
       .then(res => res.json())
       .then(data => setHistory(data))
-      .catch(err => console.error("Failed to load history:", err));
+      .catch(() => setHistory([]));
   }, [token]);
 
   const handleDelete = (id) => {
     fetch(`/history/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
-    }).then(() => {
-      setHistory(prev => prev.filter(item => item.id !== id));
+    }).then(res => {
+      if (res.ok) setHistory(prev => prev.filter(item => item.id !== id));
     });
   };
 

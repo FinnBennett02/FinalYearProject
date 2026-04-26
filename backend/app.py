@@ -110,9 +110,13 @@ def update_profile(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    current_user.age = request.age
-    current_user.weight = request.weight
-    current_user.fitness_level = request.fitness_level
-    current_user.injuries = request.injuries
+    if request.age is not None:
+        current_user.age = request.age
+    if request.weight is not None:
+        current_user.weight = request.weight
+    if request.fitness_level is not None:
+        current_user.fitness_level = request.fitness_level
+    if request.injuries is not None:
+        current_user.injuries = request.injuries
     db.commit()
     return {"message": "Profile updated"}

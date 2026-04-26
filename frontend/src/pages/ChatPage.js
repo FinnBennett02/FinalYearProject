@@ -7,6 +7,7 @@ function ChatPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { isDark } = useTheme();
   const { token } = useAuth();
 
@@ -31,12 +32,14 @@ function ChatPage() {
         body: JSON.stringify({ input: input, history: messages }),
       });
 
+      if (!res.ok) throw new Error("Server error");
       const data = await res.json();
+      setError(null);
       const botMessage = { role: "bot", text: data.workout, timestamp: new Date() };
       setMessages(prev => [...prev, botMessage]);
 
-} catch (error) {
-      console.error("Failed to reach backend:", error);
+    } catch {
+      setError("Failed to get a response. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -96,6 +99,8 @@ function ChatPage() {
         )}
         <div ref={bottomRef} />
       </div>
+
+      {error && <p style={{ color: "#ff4d4d", fontSize: "13px", margin: "4px 0" }}>{error}</p>}
 
       <div style={styles.inputRow}>
         <input
